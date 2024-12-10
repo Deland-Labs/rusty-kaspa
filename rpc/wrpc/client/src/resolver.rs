@@ -192,7 +192,9 @@ impl Resolver {
 
 #[cfg(test)]
 mod tests {
+    use kaspa_consensus_core::network::NetworkType;
     use super::*;
+    use rstest::rstest;
 
     #[test]
     fn test_resolver_config_1() {
@@ -217,9 +219,15 @@ mod tests {
         assert_eq!(urls.len(), 17);
     }
 
-    #[test]
-    fn test_resolver_config_2() {
-        let _urls = try_parse_resolvers(RESOLVER_CONFIG).expect("TOML: Unable to parse RPC Resolver list");
-        // println!("{:#?}", urls);
+    #[tokio::test]
+   async fn test_resolver_config_2() {
+        let urls = try_parse_resolvers(RESOLVER_CONFIG).expect("TOML: Unable to parse RPC Resolver list");
+        println!("{:#?}", urls);
+
+        let r = Resolver::new(Some(urls), false);
+
+        let url = r.get_url(Encoding::Borsh, NetworkId::with_suffix(NetworkType::Testnet,10)).await.unwrap();
+
+        println!("{:#?}", url);
     }
 }

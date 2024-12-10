@@ -57,6 +57,9 @@
 //!    UTXO sets will result in a browser UI freezing.
 //!
 
+#[cfg(test)]
+mod tests;
+
 use crate::imports::*;
 use crate::result::Result;
 use crate::tx::{

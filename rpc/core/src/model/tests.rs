@@ -15,6 +15,7 @@ mod mockery {
     use rand::Rng;
     use std::net::{IpAddr, Ipv4Addr};
     use std::sync::Arc;
+    use serde_json::Value;
     use uuid::Uuid;
     use workflow_serializer::prelude::*;
 
@@ -1328,5 +1329,59 @@ mod mockery {
     #[test]
     fn test_misalignment() {
         test::<Misalign>("Misalign");
+    }
+
+    #[test]
+    fn test_serde_submit_tx_request() {
+        let json=r#"{
+    "transaction": {
+      "version": 0,
+      "inputs": [
+        {
+          "previousOutpoint": {
+            "transactionId": "78b39f5b765f2c8d9a7c2f5b7fac5cfcd845654f67d40059981e7b2fe61e9ae5",
+            "index": 0
+          },
+          "signatureScript": "41b5bd86e3ab38ce5dc80ac34fe7742fdae20af8b57f38c60ccd505e8e7c4e67bac405a228be1d871e6390472ec03098825c0c97bc21fc46a53265c8ccfb98c41801",
+          "sequence": "0",
+          "sigOpCount": 1,
+          "utxo": {
+            "address": "kaspatest:qzs4fff9cc4c7vfy4quj52agacry7w8z4epugptgc2fujw53py68sejs9gphs",
+            "amount": "10000000000000",
+            "scriptPublicKey": "000020a154a525c62b8f3124a8392a2ba8ee064f38e2ae43c40568c293c93a91093478ac",
+            "blockDaaScore": "80940746",
+            "isCoinbase": false
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "value": "300000000",
+          "scriptPublicKey": {
+            "version": 0,
+            "script": "0000202822546980c5ffe2f66fb64eec00c9e36a5004b6c383e4c45d3b504fc53a6379ac"
+          }
+        },
+        {
+          "value": "9999699993334",
+          "scriptPublicKey": {
+            "version": 0,
+            "script": "000020a154a525c62b8f3124a8392a2ba8ee064f38e2ae43c40568c293c93a91093478ac"
+          }
+        }
+      ],
+      "lockTime": "0",
+      "subnetworkId": "0000000000000000000000000000000000000000",
+      "gas": "0",
+      "payload": "",
+      "mass": "3333"
+    },
+    "allowOrphan": false
+  }"#;
+
+
+        let request: SubmitTransactionRequest = serde_json::from_value(Value::String(json.to_string()) ).unwrap();
+        println!("{:?}", request);
+
     }
 }

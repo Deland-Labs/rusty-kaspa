@@ -9,6 +9,7 @@ use itertools::Itertools;
 use std::collections::BTreeMap;
 use std::iter::once;
 use thiserror::Error;
+use kaspa_math::uint::malachite_base::strings::ToLowerHexString;
 
 #[derive(Error, Debug, Clone)]
 pub enum Error {
@@ -160,6 +161,7 @@ pub fn sign_input(tx: &impl VerifiableTransaction, input_index: usize, private_k
     let hash = calc_schnorr_signature_hash(tx, input_index, hash_type, &reused_values);
     let msg = secp256k1::Message::from_digest_slice(hash.as_bytes().as_slice()).unwrap();
     let schnorr_key = secp256k1::Keypair::from_seckey_slice(secp256k1::SECP256K1, private_key).unwrap();
+    let xp= schnorr_key.public_key().x_only_public_key().0.to_lower_hex_string();
     let sig: [u8; 64] = *schnorr_key.sign_schnorr(msg).as_ref();
 
     // This represents OP_DATA_65 <SIGNATURE+SIGHASH_TYPE> (since signature length is 64 bytes and SIGHASH_TYPE is one byte)
